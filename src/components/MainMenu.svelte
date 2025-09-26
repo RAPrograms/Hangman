@@ -1,3 +1,8 @@
+<script lang="ts">
+    import TextSVG from "../assets/text_logo.svg?raw"
+    import RandomSVG from "../assets/random_logo.svg?raw"
+</script>
+
 <div class="screen">
     <div class="logo">
         <h1>Hangman</h1>
@@ -6,9 +11,18 @@
 
     <main>
         <h2>Game Modes</h2>
-        <button type="button" class="custom">Custom Word</button>
-        <button type="button" class="category">Category Random</button>
-        <button type="button" class="random">Random</button>
+        <button type="button" class="custom">
+            {@html TextSVG}
+            <div>Custom Word</div>
+        </button>
+        <button type="button" class="category">
+            {@html RandomSVG}
+            <div>Category Random</div>
+        </button>
+        <button type="button" class="random">
+            {@html RandomSVG}
+            <div>Random</div>
+        </button>
         <br>
         <button type="button" class="word-bank">Word Bank</button>
         <button type="button" class="settings">Settings</button>
@@ -58,9 +72,9 @@
         }
 
         & > main{
-            background: var(--background-colour);
+            background: color-mix(in srgb, var(--background-colour), black 30%);
             grid-area: Modes;
-            padding: 10px;
+            padding: 25px;
             gap: 20px;
 
             @media (width >= ($sidebar-width * 2)){
@@ -84,6 +98,36 @@
                     visibility: none;
                     display: none;
                 }
+            }
+
+
+            & > button{
+                transition: all 300ms ease-in-out;
+                border: 1px solid rgb(79, 79, 79);
+                border-radius: 10px;
+                font-weight: bolder;
+                align-items: center;
+                padding: 10px 20px;
+                font-size: x-large;
+                background-color: color-mix(in srgb, var(--background-colour), white 3%);
+                text-align: left;
+                cursor: pointer;
+                display: flex;
+                height: 64px;
+                gap: 30px;
+
+                &:hover{
+                    scale: 1.03;
+                    background-color: color-mix(in srgb, var(--background-colour), white 5%);
+                }
+
+                & > :global(svg){
+                    max-height: 20px;
+                    height: 100%;
+                }
+
+
+
             }
         }
 
