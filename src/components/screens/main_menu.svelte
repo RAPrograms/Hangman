@@ -65,6 +65,12 @@
         width: 500px;
         gap: 20px;
 
+        & > form:nth-of-type(1){ --accent-colour: rgb(194, 122, 255); }
+        & > form:nth-of-type(2){ --accent-colour: rgb(81, 162, 255); }
+        & > button:nth-of-type(1){ --accent-colour: rgb(6, 223, 114); }
+        & > button:nth-of-type(2){ --accent-colour: rgb(253, 199, 0); }
+        & > button:nth-of-type(3){ --accent-colour: rgb(251, 100, 182); }
+
         & > header{
             text-align: center;
         }
@@ -87,6 +93,10 @@
             & > h2{
                 font-weight: normal;
                 font-size: large;
+            }
+
+            :global(svg){
+                color: var(--accent-colour)
             }
         }
 
@@ -121,9 +131,9 @@
                     color: color-mix(in hsl shorter hue, var(--border-colour) 40%, grey);
                     padding: 2px 15px 0 15px;
                     transition: all 150ms;
-                    pointer-events: none;
                     position: absolute;
                     font-size: .8rem;
+                    width: 100%;
                     top: 0px;
                 }
 
@@ -165,11 +175,16 @@
             grid-template-rows: 1fr 1fr; 
             grid-auto-columns: 1fr; 
             text-align: left;
-            gap: 10px 20px; 
+            gap: 5px 20px; 
             display: grid; 
             grid-template-areas: 
                 "Icon Title"
                 "Icon Description"; 
+
+            &:hover, &:active, &:focus{
+                border-color: var(--accent-colour);
+                background-color: color-mix(in hsl shorter hue, var(--accent-colour) 10%, transparent);
+            }
 
             & > :global(svg){
                 aspect-ratio: 1/1;
@@ -183,8 +198,13 @@
             }
 
             & > div{
+                color: rgb(153, 161, 175);
                 grid-area: Description;
             }
+        }
+
+        & > button, & > form :is(input, select, label){
+            cursor: pointer;
         }
     }
 </style>
