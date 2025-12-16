@@ -110,7 +110,10 @@
     }
 
     main{
+        max-width: calc(1280px + 2rem);
         text-align: left;
+        margin: 0 auto;
+        padding: 2rem;
         width: 500px;
         gap: 20px;
 
@@ -215,7 +218,6 @@
             & > button[type=submit]{
                 background-color: color-mix(in hsl shorter hue, rgb(20, 71, 230) var(--background-strength, 100%), black);
                 transition: background-color 200ms ease-in-out;
-                cursor: pointer;
                 color: white;
                 padding: 10px;
                 border: none;
@@ -250,7 +252,7 @@
             }
 
             & > div{
-                color: rgb(153, 161, 175);
+                color: var(--faint-colour);
                 grid-area: Description;
             }
         }
