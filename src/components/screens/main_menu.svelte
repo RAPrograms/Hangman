@@ -5,13 +5,32 @@
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
 
-    import { type categoryDetails, getCategories } from "$lib/database";
+    import { type categoryDetails, getCategories, getRandomWord } from "$lib/database";
     import { titleCase } from "$lib/utils";
 
     const categories: Promise<Array<categoryDetails>> = getCategories()
 
     let selected_category = $state("")
     categories.then(details => selected_category = details[0].name)
+
+    function playCustomWord(e: Event){
+        e.preventDefault()
+
+        const word = new FormData(e.target as HTMLFormElement).get("value")
+        console.log(word)
+    }
+
+    async function playCategoryWord(e: Event){
+        e.preventDefault()
+
+        const [word, _] = await getRandomWord(selected_category)
+        console.log(word)
+    }
+
+    async function playRandomWord(){
+        const [word, category] = await getRandomWord()
+        console.log(word, category)
+    }
 </script>
 
 <main>
@@ -20,7 +39,7 @@
         <p>Choose your game mode</p>
     </header>
 
-    <form>
+    <form onsubmit={playCustomWord}>
         <h2>
             {@html TextIcon}
             Custom Word
@@ -32,7 +51,7 @@
         <button type="submit">Play</button>
     </form>
 
-    <form>
+    <form onsubmit={playCategoryWord}>
         <h2>
             {@html ListIcon}
             Random Word from Category
@@ -54,7 +73,7 @@
         <button type="submit" disabled={selected_category == ""}>Play {titleCase(selected_category)}</button>
     </form>
 
-    <button>
+    <button onclick={playRandomWord}>
         {@html DicesIcon}
         <h2>Random</h2>
         <div>Play with a completly random word</div>
