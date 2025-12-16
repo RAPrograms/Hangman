@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       "$icons": path_res(__dirname, "./src/assets/icons"),
       "$assets": path_res(__dirname, "./src/assets"),
+      "$lib": path_res(__dirname, "./src/lib"),
     }
   }
 })

@@ -5,7 +5,13 @@
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
 
-    import { db_ready } from "../../lib/database";
+    import { type categoryDetails, getCategories } from "$lib/database";
+    import { titleCase } from "$lib/utils";
+
+    const categories: Promise<Array<categoryDetails>> = getCategories()
+
+    let selected_category = $state("")
+    categories.then(details => selected_category = details[0].name)
 </script>
 
 <main>
@@ -33,17 +39,17 @@
         </h2>
         <label>
             <div>Custom Word</div>
-            {#await db_ready()}
+            {#await categories}
                 <span class="loading">Loading</span>
-            {:then _} 
-                <select id="category" name="value" required>
-                    <option value="1">Category 1</option>
-                    <option value="2">Category 2</option>
-                    <option value="3">Category 3</option>
+            {:then categories} 
+                <select id="category" name="value" bind:value={selected_category} required>
+                    {#each categories as {name, size}}
+                        <option value={name}>{titleCase(name)}</option>
+                    {/each}
                 </select>
             {/await}
         </label>
-        <button type="submit">Play dasasd</button>
+        <button type="submit" disabled={selected_category == ""}>Play {titleCase(selected_category)}</button>
     </form>
 
     <button>
@@ -131,7 +137,7 @@
                 gap: 5px;
             }
 
-            &:has(input:invalid) > button[type=submit]{
+            &:has(input:invalid) > button[type=submit], button[type=submit]:disabled{
                 --background-strength: 60%;
 
                 transition: background-color 400ms ease-in-out;
