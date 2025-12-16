@@ -1,4 +1,5 @@
 import { openDB, type IDBPCursorWithValue, type IDBPDatabase } from 'idb';
+import { randomNumber } from '$lib/utils';
 
 export type categoryDetails = { name: string, size: number }
 
@@ -61,36 +62,29 @@ class WordBank{
     }
 
     async getRandomWord(category: string | undefined = undefined){
+        const categories = await this.getCategories()
         const db = await this.#instance
 
-        let wordSize = 0
+        if(category == undefined){
+            const category_index = randomNumber(categories.length - 1)
+            category = categories[category_index].name
+        }
 
-        if(category != undefined){
-            const categories = await this.getCategories()
-            const size = categories.find(val => val.name == category)?.size
-            if(size == undefined)
-                return console.error(`Category "${category}" not found`)
-            
-            wordSize = size
-        }else
-            wordSize = await db.count("words")
+        const wordSize = categories.find(val => val.name == category)?.size
+        if(wordSize == undefined)
+            return console.error(`Category "${category}" not found`)
 
         if(wordSize <= 0)
             return console.error("No words to load")
 
-        const index = Math.floor(Math.random() * (wordSize -1));
-        let cursor: IDBPCursorWithValue<unknown, ["words"], "words", "category", "readonly"> | null | IDBPCursorWithValue<unknown, ["words"], "words", unknown, "readonly">
-
-        if(category != undefined)
-            cursor = await db.transaction('words').store.index("category").openCursor();
-        else
-            cursor = await db.transaction('words').store.openCursor();
-        
+        const cursor = await db.transaction('words').store.index("category").openCursor();
         if(cursor == null)
             return console.error("Cursor is unavailable")
-
+        
+        const index = randomNumber(wordSize - 1);
         await cursor?.advance(index)
-        return cursor?.value.value
+        
+        return [cursor?.value.value, cursor.value.category]
     }
 }
 
