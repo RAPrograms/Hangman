@@ -1,8 +1,89 @@
 :root{
-    --border-colour: rgb(54, 65, 83);
     --faint-colour: rgb(153, 161, 175);
+    --border-colour: rgb(54, 65, 83);
+
+    --primary-colour: rgb(20, 71, 230);
 }
 
 button{
     cursor: pointer;
+}
+
+.primary-bnt{
+    background-color: color-mix(in hsl shorter hue, var(--primary-colour) var(--background-strength, 100%), black);
+    transition: background-color 400ms ease-in-out;
+    color: white;
+    padding: 10px;
+    border: none;
+    
+    &:hover{
+        --background-strength: 80%;
+        
+        transition: background-color 250ms ease-in-out;
+        cursor: pointer;
+    }
+}
+
+hr{
+    color: color-mix(in hsl shorter hue, var(--faint-colour) 20%, transparent);
+}
+
+label.field, label[class|="field"]{
+    background-color: rgba(16, 24, 40, 0.758);
+    position: relative;
+    padding-top: 1rem;
+    display: block;
+
+    // Title
+    & > div{
+        color: color-mix(in hsl shorter hue, var(--border-colour) 40%, grey);
+        padding: 2px 15px 0 15px;
+        transition: all 150ms;
+        position: absolute;
+        text-align: left;
+        font-size: .8rem;
+        width: 100%;
+        top: 0px;
+    }
+
+    // Input, select or any other element
+    & > :nth-child(2){
+        padding: 7px 15px;
+    }
+
+    & > input, & > select{
+        font-size: 1.2rem;
+        background: none;
+        border: none;
+        width: 100%;
+    }
+
+    & > input, & > select{
+        outline: none;
+    }
+
+    &:has(input:placeholder-shown:not(:is(:active, :focus))) > div{
+        transition: all 450ms;
+        top: calc(50% - 2px);
+        translate: 0 -50%;
+    } 
+
+    &:has(:is(input, select):focus){
+        outline: 1px solid red;
+    }
+}
+
+.loading{
+    opacity: .75;
+
+    &::after{
+        content: ".";
+        animation: animated-elipsis 1s steps(3, end) infinite;
+        
+        @keyframes animated-elipsis {
+            0%, 10%  { content: "."; }
+            53%  { content: ".."; }
+            80% { content: "..."; }     
+        }
+    }
 }

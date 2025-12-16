@@ -44,11 +44,11 @@
             {@html TextIcon}
             Custom Word
         </h2>
-        <label>
+        <label class="field">
             <div>Custom Word</div>
             <input id="custom-word" placeholder="" name="value" type="text" required>
         </label>
-        <button type="submit">Play</button>
+        <button class="primary-bnt" type="submit">Play</button>
     </form>
 
     <form onsubmit={playCategoryWord}>
@@ -56,7 +56,7 @@
             {@html ListIcon}
             Random Word from Category
         </h2>
-        <label>
+        <label class="field">
             <div>Custom Word</div>
             {#await categories}
                 <span class="loading">Loading</span>
@@ -70,7 +70,7 @@
                 </select>
             {/await}
         </label>
-        <button type="submit" disabled={selected_category == ""}>Play {titleCase(selected_category)}</button>
+        <button class="primary-bnt" type="submit" disabled={selected_category == ""}>Play {titleCase(selected_category)}</button>
     </form>
 
     <button onclick={playRandomWord}>
@@ -93,22 +93,6 @@
 </main>
 
 <style lang="scss">
-    .loading{
-        opacity: .75;
-
-        &::after{
-            content: ".";
-            animation: animated-elipsis 1s steps(3, end) infinite;
-            
-            @keyframes animated-elipsis {
-                0%, 10%  { content: "."; }
-                53%  { content: ".."; }
-                80% { content: "..."; }     
-            }
-        }
-        
-    }
-
     main{
         max-width: calc(1280px + 2rem);
         text-align: left;
@@ -171,56 +155,6 @@
             & > label, & > button[type=submit]{
                 border: 1px solid var(--border-colour);
                 border-radius: 10px;
-            }
-
-            & > label{
-                background-color: rgba(16, 24, 40, 0.758);
-                position: relative;
-                padding-top: 1rem;
-                display: block;
-
-                & > div{
-                    color: color-mix(in hsl shorter hue, var(--border-colour) 40%, grey);
-                    padding: 2px 15px 0 15px;
-                    transition: all 150ms;
-                    position: absolute;
-                    font-size: .8rem;
-                    width: 100%;
-                    top: 0px;
-                }
-
-                & > :nth-child(2){
-                    padding: 7px 15px;
-                }
-
-                & > input, & > select{
-                    font-size: 1.2rem;
-                    background: none;
-                    border: none;
-                    width: 100%;
-                }
-
-                & > input, & > select{
-                    outline: none;
-                }
-
-                &:has(input:placeholder-shown:not(:is(:active, :focus))) > div{
-                    transition: all 450ms;
-                    top: calc(50% - 2px);
-                    translate: 0 -50%;
-                } 
-
-                &:has(:is(input, select):focus){
-                    outline: 1px solid red;
-                }
-            }
-
-            & > button[type=submit]{
-                background-color: color-mix(in hsl shorter hue, rgb(20, 71, 230) var(--background-strength, 100%), black);
-                transition: background-color 200ms ease-in-out;
-                color: white;
-                padding: 10px;
-                border: none;
             }
         }
 
