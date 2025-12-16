@@ -44,7 +44,9 @@
             {:then categories} 
                 <select id="category" name="value" bind:value={selected_category} required>
                     {#each categories as {name, size}}
-                        <option value={name}>{titleCase(name)}</option>
+                        {#if size >= 1}
+                            <option value={name}>{titleCase(name)}</option>
+                        {/if}
                     {/each}
                 </select>
             {/await}
