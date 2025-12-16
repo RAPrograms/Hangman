@@ -4,6 +4,7 @@
     import DicesIcon from "$icons/dices.svg?raw" 
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
+    import { categories } from "../../lib/database";
 </script>
 
 <main>
@@ -32,9 +33,9 @@
         <label>
             <div>Custom Word</div>
             <select id="category" name="value" required>
-                <option value="1">Category 1</option>
-                <option value="2">Category 2</option>
-                <option value="3">Category 3</option>
+                {#each $categories as category}
+                    <option value={category.name}>{category.name}</option>
+                {/each}
             </select>
         </label>
         <button type="submit">Play dasasd</button>
