@@ -36,7 +36,7 @@ class WordBank{
             "words",
             "category",
             IDBKeyRange.only(name.toLowerCase())
-        )
+        ) - 1
 
         return { name, size }
     }
@@ -76,15 +76,45 @@ class WordBank{
 
         if(wordSize <= 0)
             return console.error("No words to load")
-
-        const cursor = await db.transaction('words').store.index("category").openCursor();
-        if(cursor == null)
-            return console.error("Cursor is unavailable")
         
         const index = randomNumber(wordSize - 1);
-        await cursor?.advance(index)
+
+        let cursor = await db.transaction('words').store.index("category").openCursor(category)
+        if(index > 0)
+            await cursor?.advance(index)
+
+        return [cursor?.value.value, cursor?.value.category]
+    }
+
+    async addWords(category: string, words: Array<string> | string, local_only: boolean){
+        category = category.toLowerCase()
+
+        if(typeof words == "string")
+            words = [words]
+
+        const categories = await this.getCategories()
+        const db = await this.#instance
+
+        if((await db.get("categories", category)) == undefined)
+            await db.put("categories", { name: category, local_only })
         
-        return [cursor?.value.value, cursor.value.category]
+
+        const adding_tasks = []
+        for (const word of words){
+            adding_tasks.push(db.put("words", { category: category, value: word }))
+        }
+
+        await Promise.all(adding_tasks)
+
+        // Updates the categories sizes stored in memory
+        const category_index = categories.findIndex(val => val.name == category)
+
+        if(category_index != -1) // Updating size
+            categories[category_index].size += 1
+        else // Add new category
+            categories.push({ name: category, size: 1 })
+
+        this.#categories = categories
     }
 }
 
