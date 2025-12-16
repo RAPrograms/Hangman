@@ -1,4 +1,4 @@
-import { openDB, type IDBPDatabase } from 'idb';
+import { openDB, type IDBPCursorWithValue, type IDBPDatabase } from 'idb';
 
 export type categoryDetails = { name: string, size: number }
 
@@ -59,10 +59,43 @@ class WordBank{
         this.#categories = result
         return result
     }
-}
 
+    async getRandomWord(category: string | undefined = undefined){
+        const db = await this.#instance
+
+        let wordSize = 0
+
+        if(category != undefined){
+            const categories = await this.getCategories()
+            const size = categories.find(val => val.name == category)?.size
+            if(size == undefined)
+                return console.error(`Category "${category}" not found`)
+            
+            wordSize = size
+        }else
+            wordSize = await db.count("words")
+
+        if(wordSize <= 0)
+            return console.error("No words to load")
+
+        const index = Math.floor(Math.random() * (wordSize -1));
+        let cursor: IDBPCursorWithValue<unknown, ["words"], "words", "category", "readonly"> | null | IDBPCursorWithValue<unknown, ["words"], "words", unknown, "readonly">
+
+        if(category != undefined)
+            cursor = await db.transaction('words').store.index("category").openCursor();
+        else
+            cursor = await db.transaction('words').store.openCursor();
+        
+        if(cursor == null)
+            return console.error("Cursor is unavailable")
+
+        await cursor?.advance(index)
+        return cursor?.value.value
+    }
+}
 
 const bank = new WordBank("Word-Bank", 1)
 
 export const db_ready = bank.wait_for_open.bind(bank)
 export const getCategories = bank.getCategories.bind(bank)
+export const getRandomWord = bank.getRandomWord.bind(bank)
