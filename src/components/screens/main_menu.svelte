@@ -4,7 +4,8 @@
     import DicesIcon from "$icons/dices.svg?raw" 
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
-    import { categories } from "../../lib/database";
+
+    import { db_ready } from "../../lib/database";
 </script>
 
 <main>
@@ -32,11 +33,15 @@
         </h2>
         <label>
             <div>Custom Word</div>
-            <select id="category" name="value" required>
-                {#each $categories as category}
-                    <option value={category.name}>{category.name}</option>
-                {/each}
-            </select>
+            {#await db_ready()}
+                <span class="loading">Loading</span>
+            {:then _} 
+                <select id="category" name="value" required>
+                    <option value="1">Category 1</option>
+                    <option value="2">Category 2</option>
+                    <option value="3">Category 3</option>
+                </select>
+            {/await}
         </label>
         <button type="submit">Play dasasd</button>
     </form>
@@ -61,6 +66,22 @@
 </main>
 
 <style lang="scss">
+    .loading{
+        opacity: .75;
+
+        &::after{
+            content: ".";
+            animation: animated-elipsis 1s steps(3, end) infinite;
+            
+            @keyframes animated-elipsis {
+                0%, 10%  { content: "."; }
+                53%  { content: ".."; }
+                80% { content: "..."; }     
+            }
+        }
+        
+    }
+
     main{
         text-align: left;
         width: 500px;
@@ -138,9 +159,12 @@
                     top: 0px;
                 }
 
+                & > :nth-child(2){
+                    padding: 7px 15px;
+                }
+
                 & > input, & > select{
                     font-size: 1.2rem;
-                    padding: 7px 15px;
                     background: none;
                     border: none;
                     width: 100%;
