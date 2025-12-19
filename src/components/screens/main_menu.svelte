@@ -93,6 +93,8 @@
 </main>
 
 <style lang="scss">
+    @use "../../styling/variables" as *;
+
     main{
         max-width: calc(1280px + 2rem);
         text-align: left;
@@ -120,10 +122,8 @@
         }
 
         & > form, & > button{
-            background-color: rgba(50, 77, 118, 0.404);
-            border: 1px solid var(--border-colour);
-            backdrop-filter: blur(8px);
-            border-radius: 10px;
+            @include UI_Card();
+
             padding: 20px;
 
             & > h2{

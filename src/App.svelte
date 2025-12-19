@@ -4,4 +4,5 @@
 
 </script>
 
+<MainMenu/>
 <Settings/>
