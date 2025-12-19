@@ -1,0 +1,6 @@
+@mixin UI_Card(){
+    background-color: rgba(50, 77, 118, 0.404);
+    border: 1px solid var(--border-colour);
+    backdrop-filter: blur(8px);
+    border-radius: 10px;
+}
