@@ -52,7 +52,18 @@
         </section>
         
         <section class="details">
-            <h2>Details</h2>
+            {#if category != ""}
+                <header>
+                    <h2>{titleCase(category)} - Words</h2>
+                    <button type="button">
+                        {@html CrossIcon}
+                        Delete
+                    </button>
+                </header>
+                
+            {:else}
+                <div class="message">Select a category to view and manage words</div>
+            {/if}
         </section>
     </main>
 </div>
@@ -113,6 +124,7 @@
             & > .categories{
                 --background-colour: #1e2939;
 
+                border-right: 1px solid var(--border-colour);
                 background-color: var(--background-colour);
                 backdrop-filter: blur(20px);
                 padding: 20px;
@@ -124,7 +136,6 @@
                     border-bottom: 2px solid color-mix(in hsl shorter hue, var(--faint-colour) 20%, transparent);
                 }
                 
-
                 & > div{
                     flex-direction: column;
                     padding-top: 20px;
@@ -134,7 +145,7 @@
 
 
                     & > label{
-                        @include UI_Card(var(--background-opacity, 100%));
+                        @include UI_Card($background-opacity: var(--background-opacity, 100%));
 
                         transition: background-color 400ms ease-in-out,
                             border-color 400ms ease-in-out;
@@ -173,6 +184,26 @@
 
             & > .details{
                 flex-grow: 1;
+                padding: 20px;
+
+                & > header{
+                    justify-content: space-between;
+                    display: flex;
+
+                    & > button{
+                        @include UI_Card(rgb(151, 3, 3), 60%);
+                    
+                        align-items: center;
+                        display: flex;
+                        gap: 10px;
+                    }
+                }
+
+                &:has(.message:only-child){
+                    color: var(--faint-colour);
+                    place-items: center;
+                    display: grid;
+                }
             }
         }
     }

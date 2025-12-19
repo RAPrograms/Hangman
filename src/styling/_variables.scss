@@ -1,6 +1,8 @@
-@mixin UI_Card($background-opacity: 100%){
-    background-color: color-mix(in hsl shorter hue, rgba(50, 77, 118, 0.404) #{$background-opacity}, transparent);
-    border: 1px solid var(--border-colour);
+@mixin UI_Card($colour: rgb(50, 77, 118), $background-opacity: 100%){
+    $bg-colour: color-mix(in hsl shorter hue, #{$colour} 60%, transparent);
+
+    background-color: color-mix(in hsl shorter hue, $bg-colour #{$background-opacity}, transparent);
+    border: 1px solid color-mix(in hsl shorter hue, #{$colour} 90%, grey);
     backdrop-filter: blur(8px);
     border-radius: 10px;
 }
