@@ -110,7 +110,7 @@ class WordBank{
 
     async removeWord(value: string){
         const db = await this.#instance
-        await db.delete("words", value)
+        //await db.delete("words", value)
     }
 
     async newCategory(name: string, local_only: boolean){
@@ -125,11 +125,11 @@ class WordBank{
 
         const tasks = []
         for await (const cursor of index.iterate(name.toLowerCase())) {
-            tasks.push(db.delete("words", cursor.value.value))
+            tasks.push(db.delete("words", cursor.primaryKey))
         }
 
-        await Promise.all(tasks)
-        await db.delete("categories", name)
+       await Promise.all(tasks)
+       await db.delete("categories", name)
     }
 
     async addWords(category: string, words: Array<string> | string, local_only: boolean){

@@ -13,7 +13,7 @@
     const categories: Promise<Array<categoryDetails>> = bank.getCategories()
 
     let selected_category = $state("")
-    categories.then(details => selected_category = details[0].name)
+    categories.then(details => selected_category = details[0]?.name || "")
 
     function playCustomWord(e: Event){
         e.preventDefault()
