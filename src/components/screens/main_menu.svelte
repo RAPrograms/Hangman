@@ -5,10 +5,10 @@
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
 
-    import { type categoryDetails, getCategories, getRandomWord } from "$lib/database";
+    import { type categoryDetails, bank } from "$lib/database";
     import { titleCase } from "$lib/utils";
 
-    const categories: Promise<Array<categoryDetails>> = getCategories()
+    const categories: Promise<Array<categoryDetails>> = bank.getCategories()
 
     let selected_category = $state("")
     categories.then(details => selected_category = details[0].name)
@@ -23,12 +23,12 @@
     async function playCategoryWord(e: Event){
         e.preventDefault()
 
-        const [word, _] = await getRandomWord(selected_category)
+        const [word, _] = await bank.getRandomWord(selected_category)
         console.log(word)
     }
 
     async function playRandomWord(){
-        const [word, category] = await getRandomWord()
+        const [word, category] = await bank.getRandomWord()
         console.log(word, category)
     }
 </script>

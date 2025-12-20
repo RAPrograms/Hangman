@@ -104,6 +104,11 @@ class WordBank{
         await db.delete("words", value)
     }
 
+    async newCategory(name: string, local_only: boolean){
+        const db = await this.#instance
+        await db.put("categories", { name, local_only })
+    }
+
     async addWords(category: string, words: Array<string> | string, local_only: boolean){
         category = category.toLowerCase()
 
@@ -136,11 +141,4 @@ class WordBank{
     }
 }
 
-const bank = new WordBank("Word-Bank", 1)
-
-export const db_ready = bank.wait_for_open.bind(bank)
-export const getCategories = bank.getCategories.bind(bank)
-export const getRandomWord = bank.getRandomWord.bind(bank)
-export const getAllWords = bank.getAllWords.bind(bank)
-export const removeWord = bank.removeWord.bind(bank)
-export const addWords = bank.addWords.bind(bank)
+export const bank = new WordBank("Word-Bank", 1)

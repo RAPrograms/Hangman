@@ -4,7 +4,7 @@
     import CrossIcon from "$icons/cross.svg?raw"
     import AddIcon from "$icons/plus.svg?raw"
 
-    import { type categoryDetails, db_ready, getCategories, getAllWords, removeWord, addWords } from "$lib/database";
+    import { type categoryDetails, bank } from "$lib/database";
     import { titleCase } from "../../lib/utils";
     import { onMount } from "svelte";
     import Model from "../model.svelte";
@@ -17,11 +17,11 @@
     let category = $state("")
     let words_loading = $derived.by(async () => {
         if(category != "")
-            words = await getAllWords(category)
+            words = await bank.getAllWords(category)
     })
 
     onMount(async () => {
-        categories = await getCategories()
+        categories = await bank.getCategories()
     })
 
     function update_category_total(categeory: string, delta: number){
@@ -34,7 +34,7 @@
         const word = (e.target as HTMLButtonElement)
             .getAttribute("data-word")!
       
-        await removeWord(word)
+        await bank.removeWord(word)
 
         const index = words.indexOf(word);
         words.splice(index, 1)
@@ -48,11 +48,20 @@
         const input = (e.target as HTMLFormElement).querySelector("input")!
         const word = input.value
 
-        await addWords(category, word)
+        await bank.addWords(category, word)
         update_category_total(category, 1)
 
         words.push(word)
         input.value = ""
+    }
+
+    async function create_category() {
+        const data = await model.prompt("new-category")
+        if(data == undefined)
+            return
+
+        const name = data.get("value")
+        console.log(name)
     }
 </script>
 
@@ -87,12 +96,12 @@
         <section class="categories">
             <h2>Categories</h2>
             <div>
-                <button class="primary-bnt" onclick={() => {model.prompt("new-category")}}>
+                <button class="primary-bnt" onclick={create_category}>
                     {@html AddIcon}
                     Create
                 </button>
 
-                {#await db_ready()}
+                {#await bank.wait_for_open()}
                     <span class="loading">Loading</span>
                 {:then _}
                     {#each categories as {name, size}}
