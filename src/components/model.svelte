@@ -19,10 +19,11 @@
         })
     }
 
-    function handle_submission(e: { preventDefault: () => void; target: HTMLFormElement }){
+    function handle_submission(e: Event){
+        //@ts-ignore
         e.preventDefault()
 
-        const form: HTMLFormElement = e.target!
+        const form = e.target! as HTMLFormElement
         const data = new FormData(form)
 
         dialog.close()

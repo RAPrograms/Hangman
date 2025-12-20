@@ -61,7 +61,9 @@
             return
 
         const name = data.get("value")
-        console.log(name)
+
+        await bank.newCategory(name)
+        categories.push({ name, size: 0 })
     }
 </script>
 
