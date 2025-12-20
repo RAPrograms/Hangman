@@ -7,6 +7,9 @@
     import { type categoryDetails, db_ready, getCategories, getAllWords, removeWord, addWords } from "$lib/database";
     import { titleCase } from "../../lib/utils";
     import { onMount } from "svelte";
+    import Model from "../model.svelte";
+
+    let model: Model
 
     let categories: Array<categoryDetails> = $state([])
     let words: Array<string> = $state([])
@@ -53,6 +56,25 @@
     }
 </script>
 
+{#snippet NewCategoryForm(handler: (e: Event) => void, cancel: () => void)}
+    <header>
+        <h1>Add new category</h1>
+        <button type="button" class="icon-bnt" onclick={cancel}>{@html CrossIcon}</button>
+    </header>
+    <form onsubmit={handler}>
+        <label class="field">
+            <div>Custom Word</div>
+            <input id="custom-word" placeholder="" name="value" type="text" required>
+        </label>
+        <div class="actions">
+            <button type="button" class="destructive-bnt" onclick={cancel}>Cancel</button>
+            <button type="submit" class="primary-bnt">Save</button>
+        </div>
+    </form>
+{/snippet}
+
+<Model bind:this={model} pages={{"new-category": NewCategoryForm}}/>
+
 <div class="page">
     <header>
         <button type="button" aria-label="Exit Button">
@@ -65,7 +87,7 @@
         <section class="categories">
             <h2>Categories</h2>
             <div>
-                <button class="primary-bnt">
+                <button class="primary-bnt" onclick={() => {model.prompt("new-category")}}>
                     {@html AddIcon}
                     Create
                 </button>
@@ -120,7 +142,7 @@
                             <div>
                                 <span>{word}</span>
                                 
-                                <button type="button" data-word={word} onclick={remove_word}>
+                                <button type="button" class="icon-bnt" data-word={word} onclick={remove_word}>
                                     {@html CrossIcon}
                                 </button>
                             </div>
@@ -276,8 +298,6 @@
 
                 &:has(.message:only-child){
                     color: var(--faint-colour);
-                    place-items: center;
-                    display: grid;
                 }
 
                 & > form{
@@ -315,17 +335,6 @@
                         max-width: 400px;
                         flex-grow: 1;
                         width: 100%;
-
-                        & > button{
-                            place-items: center;
-                            background: none;
-                            display: grid;
-                            border: none;
-
-                            & > :global(svg){
-                                pointer-events: none;
-                            }
-                        }
                     }
                 }
             }

@@ -24,6 +24,21 @@ button{
     }
 }
 
+.destructive-bnt{
+    background-color: color-mix(in hsl shorter hue, rgb(188, 0, 0) var(--background-strength, 100%), black);
+    transition: background-color 400ms ease-in-out;
+    color: white;
+    padding: 10px;
+    border: none;
+    
+    &:hover{
+        --background-strength: 80%;
+        
+        transition: background-color 250ms ease-in-out;
+        cursor: pointer;
+    }
+}
+
 hr{
     color: color-mix(in hsl shorter hue, var(--faint-colour) 20%, transparent);
 }
@@ -85,5 +100,16 @@ label.field, label[class|="field"]{
             53%  { content: ".."; }
             80% { content: "..."; }     
         }
+    }
+}
+
+button.icon-bnt{
+    place-items: center;
+    background: none;
+    display: grid;
+    border: none;
+
+    & > :global(svg){
+        pointer-events: none;
     }
 }
