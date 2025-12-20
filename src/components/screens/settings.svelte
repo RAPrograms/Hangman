@@ -4,28 +4,52 @@
     import CrossIcon from "$icons/cross.svg?raw"
     import AddIcon from "$icons/plus.svg?raw"
 
-    import { type categoryDetails, db_ready, getCategories, getAllWords, removeWord } from "$lib/database";
+    import { type categoryDetails, db_ready, getCategories, getAllWords, removeWord, addWords } from "$lib/database";
     import { titleCase } from "../../lib/utils";
     import { onMount } from "svelte";
 
     let categories: Array<categoryDetails> = $state([])
+    let words: Array<string> = $state([])
 
     let category = $state("")
+    let words_loading = $derived.by(async () => {
+        if(category != "")
+            words = await getAllWords(category)
+    })
 
     onMount(async () => {
         categories = await getCategories()
     })
 
-    async function remove_word(e: Event){
-        const bnt = e.target as HTMLButtonElement
-        (bnt.parentNode as HTMLElement).remove()
+    function update_category_total(categeory: string, delta: number){
+        const update_index = categories.findIndex(({name}) => name == categeory)
+        if(categories[update_index].size > 0)
+            categories[update_index].size += delta
+    }
 
-        const word = bnt.getAttribute("data-word")
+    async function remove_word(e: Event){
+        const word = (e.target as HTMLButtonElement)
+            .getAttribute("data-word")!
+      
         await removeWord(word)
 
-        const update_index = categories.findIndex(({name}) => name == category)
-        if(categories[update_index].size > 0)
-            categories[update_index].size -= 1
+        const index = words.indexOf(word);
+        words.splice(index, 1)
+
+        update_category_total(category, -1)
+    }
+
+    async function add_word(e: Event) {
+        e.preventDefault()
+
+        const input = (e.target as HTMLFormElement).querySelector("input")!
+        const word = input.value
+
+        await addWords(category, word)
+        update_category_total(category, 1)
+
+        words.push(word)
+        input.value = ""
     }
 </script>
 
@@ -73,15 +97,25 @@
                     </button>
                 </header>
 
+                <form onsubmit={add_word}>
+                    <label class="field">
+                        <div>New Word</div>
+                        <input placeholder="" name="value" type="text" required>
+                    </label>
+                    <button type="submit">
+                        {@html AddIcon}
+                        Add
+                    </button>
+                </form>
                 
                 <div>
-                    {#await getAllWords(category)}
+                    {#await words_loading}
                         {#each {length: 4} as _}
                             <div>
                                 <div class="loading">Loading</div>
                             </div>
                         {/each}
-                    {:then words} 
+                    {:then _} 
                         {#each words as word}
                             <div>
                                 <span>{word}</span>
@@ -244,6 +278,24 @@
                     color: var(--faint-colour);
                     place-items: center;
                     display: grid;
+                }
+
+                & > form{
+                    display: flex;
+                    gap: 10px;
+
+                    & > .field{
+                        border-radius: 10px;
+                        flex-grow: 1;
+                    }
+
+                    & > button[type=submit]{
+                        @include UI_Card(green, 60%);
+
+                        align-items: center;
+                        display: flex;
+                        gap: 5px;
+                    }
                 }
 
                 & > div{
