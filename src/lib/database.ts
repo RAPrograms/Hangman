@@ -36,7 +36,7 @@ class WordBank{
             "words",
             "category",
             IDBKeyRange.only(name.toLowerCase())
-        ) - 1
+        )
 
         return { name, size }
     }
@@ -68,7 +68,8 @@ class WordBank{
         if(category == undefined){
             const category_index = randomNumber(categories.length - 1)
             category = categories[category_index].name
-        }
+        }else
+            category = category?.toLowerCase()
 
         const wordSize = categories.find(val => val.name == category)?.size
         if(wordSize == undefined)
@@ -84,6 +85,43 @@ class WordBank{
             await cursor?.advance(index)
 
         return [cursor?.value.value, cursor?.value.category]
+    }
+
+    async getAllWords(category: string){
+        const db = await this.#instance
+
+        const index = db.transaction('words').store.index("category");
+        const output = []
+
+        for await (const cursor of index.iterate(category)) {
+            output.push(cursor.value.value)
+        }
+
+        return output
+    }
+
+    async removeWord(value: string){
+        const db = await this.#instance
+        await db.delete("words", value)
+    }
+
+    async newCategory(name: string, local_only: boolean){
+        const db = await this.#instance
+        await db.put("categories", { name: name.toLowerCase(), local_only })
+    }
+
+    async deleteCategory(name: string){
+        const db = await this.#instance
+
+        const index = db.transaction('words').store.index("category");
+
+        const tasks = []
+        for await (const cursor of index.iterate(name.toLowerCase())) {
+            tasks.push(db.delete("words", cursor.value.value))
+        }
+
+        await Promise.all(tasks)
+        await db.delete("categories", name)
     }
 
     async addWords(category: string, words: Array<string> | string, local_only: boolean){
@@ -118,8 +156,4 @@ class WordBank{
     }
 }
 
-const bank = new WordBank("Word-Bank", 1)
-
-export const db_ready = bank.wait_for_open.bind(bank)
-export const getCategories = bank.getCategories.bind(bank)
-export const getRandomWord = bank.getRandomWord.bind(bank)
+export const bank = new WordBank("Word-Bank", 1)
