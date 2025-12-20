@@ -1,4 +1,4 @@
-import { openDB, type IDBPCursorWithValue, type IDBPDatabase } from 'idb';
+import { openDB, type IDBPCursorWithValue, type IDBPDatabase, type IDBPTransaction } from 'idb';
 import { randomNumber } from '$lib/utils';
 
 export type categoryDetails = { name: string, size: number }
@@ -10,16 +10,24 @@ class WordBank{
     constructor(name: string, version: number){
         this.#instance = this.#instance = new Promise<IDBPDatabase>(async resolve => {
             const db = await openDB(name, version, {
-                upgrade: (db, oldVersion, newVersion, transaction, event) => {
-                    const words_store = db.createObjectStore('words', { keyPath: "value" });
-                    words_store.createIndex("category", "category")
-
-                    db.createObjectStore('categories', { keyPath: "name" });
-                }
+                upgrade: this.#upgrader
             });
 
             resolve(db)
         })
+    }
+
+    #upgrader(
+        db: IDBPDatabase<unknown>,
+        oldVersion: number,
+        newVersion: number | null,
+        transaction: IDBPTransaction<unknown, string[], "versionchange">,
+        event: IDBVersionChangeEvent
+    ){
+        const words_store = db.createObjectStore("words", { autoIncrement: true })
+        words_store.createIndex("category", "category")
+
+        db.createObjectStore('categories', { keyPath: "name" });
     }
 
     wait_for_open(): Promise<void>{
