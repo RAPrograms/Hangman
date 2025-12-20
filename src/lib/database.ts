@@ -109,6 +109,20 @@ class WordBank{
         await db.put("categories", { name, local_only })
     }
 
+    async deleteCategory(name: string){
+        const db = await this.#instance
+
+        const index = db.transaction('words').store.index("category");
+
+        const tasks = []
+        for await (const cursor of index.iterate(name)) {
+            tasks.push(db.delete("words", cursor.value.value))
+        }
+
+        await Promise.all(tasks)
+        await db.delete("categories", name)
+    }
+
     async addWords(category: string, words: Array<string> | string, local_only: boolean){
         category = category.toLowerCase()
 

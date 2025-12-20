@@ -64,6 +64,20 @@
 
         await bank.newCategory(name)
         categories.push({ name, size: 0 })
+        category = name as string
+    }
+
+    async function delete_category() {
+        const data = await model.prompt("del-category")
+        if(data == undefined)
+            return
+        
+        await bank.deleteCategory(category)
+        words = []
+
+        const index = categories.findIndex(c => c.name == category);
+        categories.splice(index, 1)
+        category = ""
     }
 </script>
 
@@ -74,7 +88,7 @@
     </header>
     <form onsubmit={handler}>
         <label class="field">
-            <div>Custom Word</div>
+            <div>Category Name</div>
             <input id="custom-word" placeholder="" name="value" type="text" required>
         </label>
         <div class="actions">
@@ -84,7 +98,25 @@
     </form>
 {/snippet}
 
-<Model bind:this={model} pages={{"new-category": NewCategoryForm}}/>
+{#snippet CategoryDeletionForm(handler: (e: Event) => void, cancel: () => void)}
+    <header>
+        <h1>Delete Category?</h1>
+        <button type="button" class="icon-bnt" onclick={cancel}>{@html CrossIcon}</button>
+    </header>
+    <form onsubmit={handler}>
+        <p>Are you sure you want to delete {category}?</p>
+        <p>This is permanent and can not be undone</p>
+        <div class="actions">
+            <input type="submit" value="Yes" class="destructive-bnt">
+            <button type="button" class="primary-bnt" onclick={cancel}>No</button>
+        </div>
+    </form>
+{/snippet}
+
+<Model bind:this={model} pages={{
+    "new-category": NewCategoryForm,
+    "del-category": CategoryDeletionForm,
+}}/>
 
 <div class="page">
     <header>
@@ -124,7 +156,7 @@
             {#if category != ""}
                 <header>
                     <h2>{titleCase(category)} - Words</h2>
-                    <button type="button">
+                    <button type="button" onclick={delete_category}>
                         {@html CrossIcon}
                         Delete
                     </button>

@@ -92,7 +92,7 @@
             display: flex;
             gap: 10px;
 
-            & > :global(button){
+            & > :global(*){
                 border-radius: 5px;
             }
         }
