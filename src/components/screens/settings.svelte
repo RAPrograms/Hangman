@@ -9,6 +9,8 @@
     import { onMount } from "svelte";
     import Model from "../model.svelte";
 
+    let { gState = $bindable() } : { gState: globalState } = $props()
+
     let model: Model
 
     let categories: Array<categoryDetails> = $state([])
@@ -120,7 +122,7 @@
 
 <div class="page">
     <header>
-        <button type="button" aria-label="Exit Button">
+        <button type="button" aria-label="Exit Button" onclick={() => gState.screen = "main-menu"}>
             {@html ExitIcon}
         </button>
         <h1>Settings</h1>

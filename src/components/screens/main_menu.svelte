@@ -8,6 +8,8 @@
     import { type categoryDetails, bank } from "$lib/database";
     import { titleCase } from "$lib/utils";
 
+    let { gState = $bindable() } : { gState: globalState } = $props()
+
     const categories: Promise<Array<categoryDetails>> = bank.getCategories()
 
     let selected_category = $state("")
@@ -79,7 +81,7 @@
         <div>Play with a completly random word</div>
     </button>
 
-    <button>
+    <button onclick={() => gState.screen = "settings"}>
         {@html SettingsIcon}
         <h2>Settings</h2>
         <div>Update and modify words</div>
