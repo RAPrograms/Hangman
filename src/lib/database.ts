@@ -68,7 +68,8 @@ class WordBank{
         if(category == undefined){
             const category_index = randomNumber(categories.length - 1)
             category = categories[category_index].name
-        }
+        }else
+            category = category?.toLowerCase()
 
         const wordSize = categories.find(val => val.name == category)?.size
         if(wordSize == undefined)
@@ -106,7 +107,7 @@ class WordBank{
 
     async newCategory(name: string, local_only: boolean){
         const db = await this.#instance
-        await db.put("categories", { name, local_only })
+        await db.put("categories", { name: name.toLowerCase(), local_only })
     }
 
     async deleteCategory(name: string){
@@ -115,7 +116,7 @@ class WordBank{
         const index = db.transaction('words').store.index("category");
 
         const tasks = []
-        for await (const cursor of index.iterate(name)) {
+        for await (const cursor of index.iterate(name.toLowerCase())) {
             tasks.push(db.delete("words", cursor.value.value))
         }
 
