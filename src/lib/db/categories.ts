@@ -120,6 +120,19 @@ export default class WordCategory{
         return cursor!.value.content!
     }
 
+    async getAll(){
+        const output: Array<{content: string, key: number}> = []
+
+        for await (const cursor of this.#reader()) {
+            const obj = cursor.value
+            delete obj["category"]
+            obj["key"] = cursor.primaryKey
+            output.push(obj)
+        }
+
+        return output
+    }
+
     get size(){
         return this.#size
     }
