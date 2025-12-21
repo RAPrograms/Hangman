@@ -5,15 +5,18 @@
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
 
-    import { type categoryDetails, bank } from "$lib/database";
+    import type WordCategory from "$db/categories";
     import { titleCase } from "$lib/utils";
+    import { bank } from "$db/database";
 
     let { gState = $bindable() } : { gState: globalState } = $props()
 
-    const categories: Promise<Array<categoryDetails>> = bank.getCategories()
+    const categories: Promise<Record<string, WordCategory>> = bank.getCategories()
 
     let selected_category = $state("")
-    categories.then(details => selected_category = details[0]?.name || "")
+
+    // Preselect first category
+    categories.then(details => selected_category = Object.keys(details)[0] || "")
 
     function playCustomWord(e: Event){
         e.preventDefault()
@@ -25,12 +28,13 @@
     async function playCategoryWord(e: Event){
         e.preventDefault()
 
-        const [word, _] = await bank.getRandomWord(selected_category)
+        const category = (await categories)[selected_category]
+        const word = await category.getRandom(selected_category)
         console.log(word)
     }
 
     async function playRandomWord(){
-        const [word, category] = await bank.getRandomWord()
+        const [word, category] = await bank.getRandom()
         console.log(word, category)
     }
 </script>
@@ -63,10 +67,10 @@
             {#await categories}
                 <span class="loading">Loading</span>
             {:then categories} 
-                <select id="category" name="value" bind:value={selected_category} required>
-                    {#each categories as {name, size}}
-                        {#if size >= 1}
-                            <option value={name}>{titleCase(name)}</option>
+                <select id="category" bind:value={selected_category} required>
+                    {#each Object.values(categories) as category}
+                        {#if category.size >= 1}
+                            <option value={category.name}>{titleCase(category.name)}</option>
                         {/if}
                     {/each}
                 </select>
