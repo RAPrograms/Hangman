@@ -102,6 +102,24 @@ export default class WordCategory{
         await this.#db.delete("categories", this.#name)
     }
 
+    /** 
+     * Returns a random word from the category 
+     * 
+     * @returns a string if the size is bigger then 0
+     */
+    async getRandom(): Promise<string | undefined>{
+        if(this.#size <= 0)
+            return
+
+        const index = randomNumber(this.#size - 1);
+
+        let cursor = await this.#getIndex().openCursor(this.#name)
+        if(index > 0)
+            await cursor?.advance(index)
+
+        return cursor!.value.content!
+    }
+
     get size(){
         return this.#size
     }
