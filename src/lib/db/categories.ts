@@ -1,4 +1,6 @@
 import type { IDBPDatabase } from "idb"
+import { randomNumber } from "$lib/utils"
+import { databaseTasks } from "../utils"
 
 export default class WordCategory{
     #name: string
@@ -37,20 +39,22 @@ export default class WordCategory{
         for (let word of value){
             word = word.toLowerCase()
 
-            tasks.push(new Promise<void>(async (resolve) => {
+            tasks.push(new Promise<boolean>(async (resolve) => {
                 // Presence check to prevent duplicates
                 if(await index.get([this.#name, word]))
-                    return resolve()
-                
-                this.#db.put("words", { category: this.#name, content: word })
-                return resolve()
+                    return resolve(false)
 
+                try {
+                    this.#db.put("words", { category: this.#name, content: word })
+                } catch (error) {
+                    return resolve(false)
+                }
+                
+                return resolve(true)
             }))
         }
 
-        await Promise.all(tasks)
-
-        this.#size += value.length
+        this.#size += await databaseTasks(tasks)
     }
 
     async removeWords(value: Array<string> | string){
@@ -63,24 +67,28 @@ export default class WordCategory{
         const tasks = []
 
         for await (const cursor of this.#reader()) {
-            if(!map.has(cursor.value.content))
-                continue
+            tasks.push(new Promise<boolean>(async resolve => {
+                if(!map.has(cursor.value.content))
+                    return resolve(false)
 
-            tasks.push(this.#db.delete("words", cursor.primaryKey))
+                try {
+                    await this.#db.delete("words", cursor.primaryKey)
+                } catch (error) {
+                    return resolve(false)
+                }
+
+                resolve(true)
+            }))
         }
 
-        await Promise.all(tasks)
-
-        this.#size -= value.length
+        this.#size -= await databaseTasks(tasks)
         if(this.#size > 0)
             return
 
         await this.#db.delete("categories", this.#name)
     }
 
-    /**
-     * Deletes all words in the category
-     */
+    /** Deletes all words in the category */
     async delete(){
         const tasks = []
 
@@ -98,9 +106,12 @@ export default class WordCategory{
         return this.#size
     }
 
+    #getIndex(){
+        return this.#db.transaction('words').store.index('category')
+    }
+
     async* #reader(){
-        const index = this.#db.transaction('words').store.index('category');
-        for await (const cursor of index.iterate(this.#name)) {
+        for await (const cursor of this.#getIndex().iterate(this.#name)) {
             yield cursor
         }
     }
