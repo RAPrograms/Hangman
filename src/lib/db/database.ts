@@ -1,7 +1,7 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
 import { randomNumber } from '$lib/utils';
 
-import WordCategory from './categories';
+import WordCategory from '$db/categories';
 
 class WordBank{
     #instance: Promise<IDBPDatabase>

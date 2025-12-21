@@ -1,6 +1,6 @@
 import type { IDBPDatabase } from "idb"
-import { randomNumber } from "$lib/utils"
-import { databaseTasks } from "../utils"
+
+import { randomNumber, databaseTasks } from "$lib/utils"
 
 export default class WordCategory{
     #name: string
