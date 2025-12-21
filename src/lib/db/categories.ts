@@ -78,6 +78,22 @@ export default class WordCategory{
         await this.#db.delete("categories", this.#name)
     }
 
+    /**
+     * Deletes all words in the category
+     */
+    async delete(){
+        const tasks = []
+
+        for await (const cursor of this.#reader()) {
+            tasks.push(this.#db.delete("words", cursor.primaryKey))
+        }
+
+        await Promise.all(tasks)
+
+        this.#size = 0
+        await this.#db.delete("categories", this.#name)
+    }
+
     get size(){
         return this.#size
     }
