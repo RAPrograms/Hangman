@@ -1,36 +1,32 @@
 <script lang="ts">
-    const letters = new Array( 26 ).fill( 1 ).map( ( _, i ) => {return {
-        key: String.fromCharCode( 65 + i ),
-        used: false
-    }} );
+    const { validator }:{
+        validator: (letter: string) => boolean
+    } = $props()
 
-    function handleKeyboard(e){
-        const key = e.key.toUpperCase()
+    const letters: Array<string> = new Array( 26 ).fill( 1 ).map( ( _, i ) => String.fromCharCode( 97 + i ));
+    let states: Record<string, boolean> = $state({})
 
-        const index = letters.findIndex(e => e.key == key)
+    function processKey(key: string){
+        const index = letters.indexOf(key)
         if(index == -1)
             return
 
-        e.preventDefault()
-
-        if(letters[index].used)
+        if(states[key] != undefined)
             return
 
-        letters[index].used = true
+        const correct = validator(key)
+        states[key] = correct
+    }
+
+    function handleKeyboard(e){
+        e.preventDefault()
+        processKey(e.key)
     }
 
     //@ts-ignore
     function handleButton({target}){
         const key = target.getAttribute("data-key")
-        
-        const index = letters.findIndex(e => e.key == key)
-        if(index == -1)
-            return
-
-        if(letters[index].used)
-            return
-
-        letters[index].used = true
+        processKey(key)
     }
 
 </script>
@@ -38,24 +34,44 @@
 <svelte:window onkeydown={handleKeyboard}/>
 
 <div>
-    {#each letters as {key, used}}
-        <button data-key={key} disabled={used} onclick={handleButton}>{key}</button>
+    {#each letters as key}
+        <button
+            class:right={states[key] || false}
+            class:wrong={(states[key] != undefined)? !states[key] : false}
+            data-key={key}
+            disabled={states[key] != undefined}
+            onclick={handleButton}>
+            {key}
+        </button>
     {/each}
 </div>
 
 <style lang="scss">
+    @use "../styling/variables" as *;
+
     div{
-        display: flex;
-        flex-wrap: wrap;
-        max-width: 90vw;
         justify-content: center;
         align-items: flex-end;
+        flex-wrap: wrap;
+        max-width: 90vw;
+        display: flex;
 
         & > button{
+            @include UI_Card(var(--colour, rgb(50, 77, 118)), var(--opacity, 60%));
+
+            width: clamp(30px, 5vw + 1rem, 75px);
+            text-transform: uppercase;
             aspect-ratio: 1/1;
             display: block;
 
-            width: clamp(30px, 5vw + 1rem, 75px);
+            &:disabled, &.wrong, &.right{
+                --opacity: 40%;
+
+                opacity: .7;
+            }
+
+            &.right{ --colour: rgb(0, 255, 0, .75); }
+            &.wrong{ --colour: rgb(151, 3, 3); }
         }
     }
 </style>
