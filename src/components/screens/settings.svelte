@@ -1,61 +1,35 @@
 <script lang="ts">
+    
     import ChevronIcon from "$icons/chevron-right.svg?raw"
     import ExitIcon from "$icons/left-line-arrow.svg?raw"
     import CrossIcon from "$icons/cross.svg?raw"
     import AddIcon from "$icons/plus.svg?raw"
-
-    import { type categoryDetails, bank } from "$lib/database";
-    import { titleCase } from "../../lib/utils";
-    import { onMount } from "svelte";
     import Model from "../model.svelte";
 
-    let { gState = $bindable() } : { gState: globalState } = $props()
+    import CategoryWordsManager from "../category_words_manager.svelte";
+    import WordCategory from "$db/categories";
+    
+    import { titleCase } from "../../lib/utils";
+    import { bank } from "$db/database";
 
+    let { gState = $bindable() } : { gState: globalState } = $props()
     let model: Model
 
-    let categories: Array<categoryDetails> = $state([])
-    let words: Array<string> = $state([])
-
-    let category = $state("")
-    let words_loading = $derived.by(async () => {
-        if(category != "")
-            words = await bank.getAllWords(category)
+    let categories: Record<string, {instance: WordCategory, size: number}> = $state({})
+    let loading_categories = new Promise<void>(async resolve => {
+        
+        const results: Record<string, WordCategory> = await bank.getCategories()
+        for (const instance of Object.values(results)) {
+            categories[instance.name] = {
+                instance,
+                size: instance.size,
+            }
+        }
+        
+        resolve()
     })
-
-    onMount(async () => {
-        categories = await bank.getCategories()
-    })
-
-    function update_category_total(categeory: string, delta: number){
-        const update_index = categories.findIndex(({name}) => name == categeory)
-        if(categories[update_index].size > 0)
-            categories[update_index].size += delta
-    }
-
-    async function remove_word(e: Event){
-        const word = (e.target as HTMLButtonElement)
-            .getAttribute("data-word")!
-      
-        await bank.removeWord(word)
-
-        const index = words.indexOf(word);
-        words.splice(index, 1)
-
-        update_category_total(category, -1)
-    }
-
-    async function add_word(e: Event) {
-        e.preventDefault()
-
-        const input = (e.target as HTMLFormElement).querySelector("input")!
-        const word = input.value
-
-        await bank.addWords(category, word)
-        update_category_total(category, 1)
-
-        words.push(word)
-        input.value = ""
-    }
+    
+    let selected_category = $state("")
 
     async function create_category() {
         const data = await model.prompt("new-category")
@@ -64,22 +38,13 @@
 
         const name = data.get("value")
 
-        await bank.newCategory(name)
-        categories.push({ name, size: 0 })
-        category = name as string
-    }
+        const category_instance: WordCategory = await bank.newCategory(name)
+        categories[category_instance.name] = {
+            instance: category_instance,
+            size: category_instance.size,
+        }
 
-    async function delete_category() {
-        const data = await model.prompt("del-category")
-        if(data == undefined)
-            return
-        
-        await bank.deleteCategory(category)
-        words = []
-
-        const index = categories.findIndex(c => c.name == category);
-        categories.splice(index, 1)
-        category = ""
+        selected_category = category_instance.name
     }
 </script>
 
@@ -100,25 +65,7 @@
     </form>
 {/snippet}
 
-{#snippet CategoryDeletionForm(handler: (e: Event) => void, cancel: () => void)}
-    <header>
-        <h1>Delete Category?</h1>
-        <button type="button" class="icon-bnt" onclick={cancel}>{@html CrossIcon}</button>
-    </header>
-    <form onsubmit={handler}>
-        <p>Are you sure you want to delete {category}?</p>
-        <p>This is permanent and can not be undone</p>
-        <div class="actions">
-            <input type="submit" value="Yes" class="destructive-bnt">
-            <button type="button" class="primary-bnt" onclick={cancel}>No</button>
-        </div>
-    </form>
-{/snippet}
-
-<Model bind:this={model} pages={{
-    "new-category": NewCategoryForm,
-    "del-category": CategoryDeletionForm,
-}}/>
+<Model bind:this={model} pages={{"new-category": NewCategoryForm}}/>
 
 <div class="page">
     <header>
@@ -137,68 +84,31 @@
                     Create
                 </button>
 
-                {#await bank.wait_for_open()}
+                {#await loading_categories}
                     <span class="loading">Loading</span>
                 {:then _}
-                    {#each categories as {name, size}}
+                    {#each Object.values(categories) as {instance, size}}
                         <label>
                             <span>
-                                <div>{titleCase(name)}</div>
+                                <div>{titleCase(instance.name)}</div>
                                 <div>({size})</div>
                             </span>
                             {@html ChevronIcon}
-                            <input type="radio" bind:group={category} value={name}>
+                            <input type="radio" bind:group={selected_category} value={instance.name}>
                         </label> 
                     {/each}
                 {/await}
             </div>
         </section>
-        
-        <section class="details">
-            {#if category != ""}
-                <header>
-                    <h2>{titleCase(category)} - Words</h2>
-                    <button type="button" onclick={delete_category}>
-                        {@html CrossIcon}
-                        Delete
-                    </button>
-                </header>
 
-                <form onsubmit={add_word}>
-                    <label class="field">
-                        <div>New Word</div>
-                        <input placeholder="" name="value" type="text" required>
-                    </label>
-                    <button type="submit">
-                        {@html AddIcon}
-                        Add
-                    </button>
-                </form>
-                
-                <div>
-                    {#await words_loading}
-                        {#each {length: 4} as _}
-                            <div>
-                                <div class="loading">Loading</div>
-                            </div>
-                        {/each}
-                    {:then _} 
-                        {#each words as word}
-                            <div>
-                                <span>{word}</span>
-                                
-                                <button type="button" class="icon-bnt" data-word={word} onclick={remove_word}>
-                                    {@html CrossIcon}
-                                </button>
-                            </div>
-                        {/each}
-                    {/await}
-                </div>
-                
-            {:else}
-                <div class="message">Select a category to view and manage words</div>
-            {/if}
-        </section>
+        {#if selected_category == ""}
+            <div class="message">Select a category to view and manage words</div>
+        {:else}
+            <CategoryWordsManager bind:details={categories[selected_category]} onDelete={() => {
+                delete categories[selected_category]
+                selected_category = ""
+            }}/>
+        {/if}
     </main>
 </div>
 
@@ -316,70 +226,6 @@
                         & > input{
                             display: none;
                         }
-                    }
-                }
-            }
-
-            & > .details{
-                flex-grow: 1;
-                padding: 20px;
-
-                & > header{
-                    justify-content: space-between;
-                    display: flex;
-
-                    & > button{
-                        @include UI_Card(rgb(151, 3, 3), 60%);
-                    
-                        align-items: center;
-                        display: flex;
-                        gap: 10px;
-                    }
-                }
-
-                & > .loading{
-                    width: max-content;
-                }
-
-                &:has(.message:only-child){
-                    color: var(--faint-colour);
-                }
-
-                & > form{
-                    display: flex;
-                    gap: 10px;
-
-                    & > .field{
-                        border-radius: 10px;
-                        flex-grow: 1;
-                    }
-
-                    & > button[type=submit]{
-                        @include UI_Card(green, 60%);
-
-                        align-items: center;
-                        display: flex;
-                        gap: 5px;
-                    }
-                }
-
-                & > div{
-                    flex-wrap: wrap;
-                    gap: 20px;
-                    
-                    &, & > div{
-                        display: flex;
-                    }
-
-                    & > div{
-                        @include UI_Card();
-
-                        justify-content: space-between;
-                        align-items: center;
-                        padding: 10px 20px;
-                        max-width: 400px;
-                        flex-grow: 1;
-                        width: 100%;
                     }
                 }
             }

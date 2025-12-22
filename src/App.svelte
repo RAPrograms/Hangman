@@ -6,9 +6,9 @@
 </script>
 
 {#if state.screen == "main-menu"}
-    <MainMenu gState={state}/>
+    <MainMenu bind:gState={state}/>
 {:else if state.screen == "settings"}
-    <Settings gState={state}/>
+    <Settings bind:gState={state}/>
 {:else if state.screen == "game"}
     TODO
 {/if}
