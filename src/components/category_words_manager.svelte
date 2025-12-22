@@ -198,24 +198,3 @@
         }
     }
 </style>
-
-
-<!--<section>
-    {#await words_loading}
-        {#each {length: 4} as _}
-            <div>
-                <div class="loading">Loading</div>
-            </div>
-        {/each}
-    {:then _} 
-        {#each words as {content, key}}
-            <div>
-                <span>{content}</span>
-                
-                <button type="button" data-id={key} class="icon-bnt" onclick={remove_word}>
-                    {@html CrossIcon}
-                </button>
-            </div>
-        {/each}
-    {/await}
-</section>-->
