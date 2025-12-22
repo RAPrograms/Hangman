@@ -1,9 +1,9 @@
 <script lang="ts">
-    import TextIcon from "$icons/text.svg?raw" 
-    import ListIcon from "$icons/list.svg?raw" 
-    import DicesIcon from "$icons/dices.svg?raw" 
     import SettingsIcon from "$icons/settings.svg?raw" 
     import DownloadIcon from "$icons/download.svg?raw" 
+    import DicesIcon from "$icons/dices.svg?raw" 
+    import TextIcon from "$icons/text.svg?raw" 
+    import ListIcon from "$icons/list.svg?raw" 
 
     import type WordCategory from "$db/categories";
     import { titleCase } from "$lib/utils";

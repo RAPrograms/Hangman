@@ -7,7 +7,6 @@
     import type WordCategory from "$db/categories";
     import { titleCase } from "$lib/utils";
     import { bank } from "$db/database";
-    import { onMount } from "svelte";
 
     let model: Model
 

@@ -6,10 +6,11 @@
     import AddIcon from "$icons/plus.svg?raw"
     import Model from "../model.svelte";
 
+    import CategoryWordsManager from "../category_words_manager.svelte";
     import WordCategory from "$db/categories";
+    
     import { titleCase } from "../../lib/utils";
     import { bank } from "$db/database";
-    import CategoryWordsManager from "../category_words_manager.svelte";
 
     let { gState = $bindable() } : { gState: globalState } = $props()
     let model: Model
