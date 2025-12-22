@@ -56,6 +56,19 @@ class WordBank{
         return output
     }
 
+    async newCategory(name: string){
+        const categories = await this.getCategories()
+        if(categories[name] != undefined)
+            return categories[name]
+
+        const category = await WordCategory.open(name, await this.#instance)
+
+        categories[name] = category
+        this.#categories = categories
+
+        return category
+    }
+
     /** Returns a random word from a random category */
     async getRandom(): Promise<[ string | undefined, string ]>{
         const categories = await this.getCategories()
@@ -64,6 +77,15 @@ class WordBank{
         const index = randomNumber(keys.length - 1);
 
         return [await categories[keys[index]].getRandom(), keys[index]]
+    }
+
+    async deleteCategory(name: string){
+        const categories = await this.getCategories()
+        const category = categories[name]
+        if(category == undefined)
+            return 
+
+        await category.delete()
     }
 }
 

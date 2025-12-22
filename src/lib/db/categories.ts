@@ -36,6 +36,7 @@ export default class WordCategory{
         const index = this.#db.transaction('words').store.index('hash');
         
         const tasks = []
+        const ids: Record<string, number> = {}
         for (let word of value){
             word = word.toLowerCase()
 
@@ -45,7 +46,8 @@ export default class WordCategory{
                     return resolve(false)
 
                 try {
-                    this.#db.put("words", { category: this.#name, content: word })
+                    const id = await this.#db.add("words", { category: this.#name, content: word })
+                    ids[word] = id as number
                 } catch (error) {
                     return resolve(false)
                 }
@@ -55,6 +57,34 @@ export default class WordCategory{
         }
 
         this.#size += await databaseTasks(tasks)
+        return ids
+    }
+
+    async removeById(ids: Array<number> | number){
+        if(typeof ids == "number")
+            ids = [ids]
+
+        const tasks = []
+
+        for (const id of ids) {
+            tasks.push(new Promise<boolean>(async resolve => {
+                try {
+                    console.log(await this.#db.delete("words", Number(id)))
+                } catch (error) {
+                    console.error(error)
+                    return resolve(false)
+                }
+
+                resolve(true)
+            }))
+        }
+
+        this.#size -= await databaseTasks(tasks)
+
+        if(this.#size > 0)
+            return
+
+        await this.#db.delete("categories", this.#name)
     }
 
     async removeWords(value: Array<string> | string){
@@ -121,21 +151,20 @@ export default class WordCategory{
     }
 
     async getAll(){
-        const output: Array<{content: string, key: number}> = []
+        const output: Array<{content: string, id: number}> = []
 
         for await (const cursor of this.#reader()) {
             const obj = cursor.value
             delete obj["category"]
-            obj["key"] = cursor.primaryKey
+            obj["id"] = cursor.primaryKey
             output.push(obj)
         }
 
         return output
     }
 
-    get size(){
-        return this.#size
-    }
+    get size(){ return this.#size }
+    get name(){ return this.#name }
 
     #getIndex(){
         return this.#db.transaction('words').store.index('category')
