@@ -128,9 +128,12 @@
     @use "../styling/variables" as *;
 
     section{
-        flex-grow: 1;
+        flex-direction: column;
         padding: 20px;
-
+        display: flex;
+        flex-grow: 1;
+        gap: 20px;
+        
         & > header{
             justify-content: space-between;
             display: flex;
