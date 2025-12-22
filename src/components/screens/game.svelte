@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Keyboard from "../keyboard.svelte";
+
     const { 
         word,
         category
@@ -9,3 +11,5 @@
 </script>
 
 <div>{word} from {category}</div>
+
+<Keyboard/>
