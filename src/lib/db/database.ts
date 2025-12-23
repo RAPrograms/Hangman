@@ -38,7 +38,7 @@ class WordBank{
 
     async #load_defaults(db: IDBPDatabase){
         const base = (import.meta.env.BASE_URL != "/")? import.meta.env.BASE_URL : ""
-        const [category_names, categories_error] = await fetchFile(`${base}/words/.index`)
+        const [category_names, categories_error] = await fetchFile(`${base}/words/.index.txt`)
         if(categories_error){
             console.error(categories_error)
             alert("Unable to load default words")
@@ -49,7 +49,7 @@ class WordBank{
 
         for (const name of category_names) {
             tasks.push(new Promise<WordCategory>(async resolve => {
-                const [words, error] = await fetchFile(`${base}/words/${name}`)
+                const [words, error] = await fetchFile(`${base}/words/${name}.txt`)
         
                 if(error){
                     console.error(error)
@@ -57,7 +57,7 @@ class WordBank{
                 }
                     
                 const instance = await WordCategory.open(name, db)
-                instance.addWords(words)
+                await instance.addWords(words)
                 resolve(instance)
             }))
         }
