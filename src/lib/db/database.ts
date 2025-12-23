@@ -1,23 +1,26 @@
 import { openDB, type IDBPDatabase, type IDBPTransaction } from 'idb';
-import { randomNumber } from '$lib/utils';
-
+import { randomNumber, fetchFile } from '$lib/utils';
 import WordCategory from '$db/categories';
 
 class WordBank{
     #instance: Promise<IDBPDatabase>
     #categories: Record<string, WordCategory> | undefined
+    #fresh: boolean = false
 
     constructor(name: string, version: number){
-        this.#instance = this.#instance = new Promise<IDBPDatabase>(async resolve => {
+        this.#instance = new Promise<IDBPDatabase>(async resolve => {
             const db = await openDB(name, version, {
-                upgrade: this.#upgrader
+                upgrade: async(db, oldVersion, newVersion, transaction, event) => await this.#upgrader(db, oldVersion, newVersion, transaction, event)
             });
+
+            if(this.#fresh)
+                await this.#load_defaults(db)
 
             resolve(db)
         })
     }
 
-    #upgrader(
+    async #upgrader(
         db: IDBPDatabase<unknown>,
         oldVersion: number,
         newVersion: number | null,
@@ -29,6 +32,37 @@ class WordBank{
         words_store.createIndex("hash", ["category", "content"])
 
         db.createObjectStore('categories', { keyPath: "name" });
+
+        this.#fresh = true
+    }
+
+    async #load_defaults(db: IDBPDatabase){
+        const [category_names, categories_error] = await fetchFile("/words/.index")
+        if(categories_error){
+            console.error(categories_error)
+            alert("Unable to load default words")
+            return
+        }
+
+        const tasks = []
+
+        for (const name of category_names) {
+            tasks.push(new Promise<WordCategory>(async resolve => {
+                const [words, error] = await fetchFile(`/words/${name}`)
+                if(error)
+                    return console.error(error)
+                    
+                const instance = await WordCategory.open(name, db)
+                instance.addWords(words)
+                resolve(instance)
+            }))
+        }
+
+        this.#categories = {}
+        for(const instance of await Promise.all(tasks)){
+            this.#categories[instance.name] = instance
+        }
+
     }
 
     wait_for_open(): Promise<void>{
@@ -44,7 +78,7 @@ class WordBank{
             return this.#categories
 
         const db = await this.#instance
-        const names: Array<{ name: string, local_only: boolean }> = await db.getAll("categories")
+        const names: Array<{ name: string }> = await db.getAll("categories")
 
         const output: Record<string, WordCategory> = {}
     
