@@ -69,7 +69,7 @@ export default class WordCategory{
         for (const id of ids) {
             tasks.push(new Promise<boolean>(async resolve => {
                 try {
-                    console.log(await this.#db.delete("words", Number(id)))
+                    await this.#db.delete("words", Number(id))
                 } catch (error) {
                     console.error(error)
                     return resolve(false)
