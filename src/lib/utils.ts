@@ -19,3 +19,20 @@ export async function databaseTasks(tasks: Array<Promise<boolean>>): Promise<num
     const results = await Promise.all(tasks)
     return results.reduce((changes, res) => changes + Number(res), 0)
 }
+
+export async function fetchFile(uri: string) {
+    try {
+        const res = await fetch(uri)
+        if(!res.ok)
+            throw new Error("Request not OK")
+
+        if(res.status < 200 || 299 <= res.status)
+            throw new Error("Non 4xx status code")
+
+        const content = await res.text()
+        return [content.split("\n"), null]
+
+    } catch (error) {
+        return [null, error]
+    }
+}
