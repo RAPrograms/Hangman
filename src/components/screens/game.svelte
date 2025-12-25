@@ -1,5 +1,6 @@
 <script lang="ts">
     import LivesDisplay from "../game/lives_display.svelte";
+    import WordDisplay from "../game/word_display.svelte";
     import Keyboard from "../keyboard.svelte";
 
     const { 
@@ -10,6 +11,8 @@
         category: string
     } = $props()
 
+    let display: WordDisplay
+
     const total_lives = 6
     let lives = $state(total_lives)
 
@@ -17,6 +20,9 @@
         const correct = word.toLowerCase().includes(letter.toLowerCase())
         if(!correct)
             lives -= 1
+
+        display.showCharacter(letter)
+
         return correct
     }
 </script>
@@ -30,6 +36,8 @@
         </header>
 
         <LivesDisplay bind:lives={lives} {total_lives}/>
+
+        <WordDisplay bind:this={display} {word}/>
     </main>
     
     <Keyboard validator={validateLetter}/>
