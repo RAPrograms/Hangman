@@ -6,7 +6,7 @@ export function titleCase(content: string){
             return word
 
         return word[0].toUpperCase() + word.substring(1)
-    })
+    }).join(" ")
 }
 
 export function randomNumber(end: number, start: number = 0){

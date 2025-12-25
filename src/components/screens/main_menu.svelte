@@ -21,7 +21,9 @@
     function playCustomWord(e: Event){
         e.preventDefault()
 
-        const word = new FormData(e.target as HTMLFormElement).get("value")
+        const data = new FormData(e.target as HTMLFormElement)
+        const word = (data.get("value") as string).toLowerCase()
+
         gState = {screen: "game", data: {word, category: undefined}}
     }
 
