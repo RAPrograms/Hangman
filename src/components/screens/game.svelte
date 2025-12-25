@@ -2,16 +2,20 @@
     import LivesDisplay from "../game/lives_display.svelte";
     import WordDisplay from "../game/word_display.svelte";
     import Keyboard from "../keyboard.svelte";
+    import Model from "../model.svelte";
 
-    const { 
+    let { 
         word,
-        category
+        category,
+        gState = $bindable()
     }:{
         word: string,
-        category: string
+        category: string,
+        gState: globalState
     } = $props()
 
     let display: WordDisplay
+    let model: Model
 
     const total_lives = 6
     let lives = $state(total_lives)
@@ -21,11 +25,37 @@
         if(!correct)
             lives -= 1
 
+        if(lives <= 0)
+            model.prompt("game-end")
+
         display.showCharacter(letter)
 
         return correct
     }
 </script>
+
+{#snippet GameEndModel(handler: (e: Event) => void, cancel: () => void)}
+    <header>
+        <h1 style="text-align: center;">You’ve been hanged! 😭</h1>
+    </header>
+    <div>
+        <p>The word was "<b>{word}</b>"</p>
+        {#if category == undefined}
+            <p>As a <b>custom</b> word</p>
+        {:else}
+            <p>From "<b>{category}</b>" category</p>
+        {/if}
+    </div>
+    <div class="buttons">
+        <button style="--accent-colour: rgb(251, 100, 182)">Share Game with a Friend</button>
+        <button style="--accent-colour: rgb(81, 162, 255)" onclick={() => {
+            cancel()
+            gState = {"screen": "main-menu", data: undefined}
+        }}>Close</button>
+    </div>
+{/snippet}
+
+<Model bind:this={model} pages={{"game-end": GameEndModel}}/>
 
 <div class="game">
 

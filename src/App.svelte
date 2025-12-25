@@ -11,5 +11,5 @@
 {:else if state.screen == "settings"}
     <Settings bind:gState={state}/>
 {:else if state.screen == "game"}
-    <Game word={state.data["word"]} category={state.data["category"]}/>
+    <Game bind:gState={state} word={state.data["word"]} category={state.data["category"]}/>
 {/if}
