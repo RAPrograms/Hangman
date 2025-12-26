@@ -1,4 +1,5 @@
 <script lang="ts">
+    import LeftChevron from "$icons/chevron-left.svg?raw"
     import CrossIcon from "$icons/cross.svg?raw"
     import AddIcon from "$icons/plus.svg?raw"
 
@@ -13,9 +14,11 @@
     const {
         details = $bindable(),
         onDelete,
+        onExit
     } : {
         details: {instance: WordCategory, size: number},
-        onDelete: () => void
+        onDelete: () => void,
+        onExit: () => void
     } = $props()
 
     let words: Array<{ content: string; id: number; }> = $state([])
@@ -84,8 +87,11 @@
 
 <section>
     <header>
+        <button class="back" onclick={onExit}>
+            {@html LeftChevron}
+        </button>
         <h2>{titleCase(details.instance.name)} - Words</h2>
-        <button type="button" onclick={delete_category}>
+        <button class="delete" type="button" onclick={delete_category}>
             {@html CrossIcon}
             Delete
         </button>
@@ -126,8 +132,11 @@
 <style lang="scss">
     @use "../styling/variables" as *;
 
+    $layout-breakpoint: 600px;
+
     section{
         flex-direction: column;
+        max-height: 100vh;
         padding: 20px;
         display: flex;
         flex-grow: 1;
@@ -137,7 +146,14 @@
             justify-content: space-between;
             display: flex;
 
-            & > button{
+            & > button.back{
+                @media (width >= $layout-breakpoint) {
+                    display: none;
+                    visibility: none;
+                }
+            }
+
+            & > button.delete{
                 @include UI_Card(rgb(151, 3, 3), 60%);
             
                 align-items: center;
@@ -173,8 +189,13 @@
         }
 
         & > div{
+            overflow-y: auto;
             flex-wrap: wrap;
             gap: 20px;
+
+            @media (width <= $layout-breakpoint) {
+                justify-content: center;
+            }
             
             &, & > div{
                 display: flex;
