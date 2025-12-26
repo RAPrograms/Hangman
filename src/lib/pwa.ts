@@ -37,3 +37,18 @@ export async function install(){
     const result = await installer.prompt();
     console.log(`Install prompt was: ${result.outcome}`);
 }
+
+
+if ('serviceWorker' in navigator) {
+    // Wait for the 'load' event to not block other work
+    window.addEventListener('load', async () => {
+        if(import.meta.env?.DEV)
+            return
+
+        try {
+            await navigator.serviceWorker.register('/offline-worker.js');
+        } catch (err) {
+            console.log('😥 Service worker registration failed: ', err);
+        }
+    });
+}   
