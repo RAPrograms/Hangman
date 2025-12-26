@@ -6,7 +6,7 @@ export function titleCase(content: string){
             return word
 
         return word[0].toUpperCase() + word.substring(1)
-    })
+    }).join(" ")
 }
 
 export function randomNumber(end: number, start: number = 0){
@@ -35,4 +35,17 @@ export async function fetchFile(uri: string) {
     } catch (error) {
         return [null, error]
     }
+}
+
+export function bufferToBase64(buffer: ArrayBuffer | Uint8Array<ArrayBuffer>): string{
+    const array = new Uint8Array(buffer)
+    const string = String.fromCharCode(...array)
+    return btoa(string);
+}
+
+export function base64ToBuffer(base64: string): Uint8Array<ArrayBuffer>{
+    return Uint8Array.from(
+        atob(base64), 
+        c => c.charCodeAt(0)
+    );
 }

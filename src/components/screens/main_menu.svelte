@@ -21,8 +21,10 @@
     function playCustomWord(e: Event){
         e.preventDefault()
 
-        const word = new FormData(e.target as HTMLFormElement).get("value")
-        console.log(word)
+        const data = new FormData(e.target as HTMLFormElement)
+        const word = (data.get("value") as string).toLowerCase()
+
+        gState = {screen: "game", data: {word, category: undefined}}
     }
 
     async function playCategoryWord(e: Event){
@@ -30,12 +32,13 @@
 
         const category = (await categories)[selected_category]
         const word = await category.getRandom(selected_category)
-        console.log(word)
+        
+        gState = {screen: "game", data: {word, category: selected_category}}
     }
 
     async function playRandomWord(){
         const [word, category] = await bank.getRandom()
-        console.log(word, category)
+        gState = {screen: "game", data: {word, category: category}}
     }
 </script>
 

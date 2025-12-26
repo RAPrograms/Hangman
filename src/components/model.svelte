@@ -32,7 +32,6 @@
     }
 
     function close(){
-
         dialog.close()
         resolver(undefined)
         selected = ""
@@ -61,7 +60,7 @@
             display: none;
         }
 
-        &, & > :global(form){
+        &, & > :global(form), & :global(.buttons){
             flex-direction: column;
             display: flex;
             gap: 20px;
@@ -72,14 +71,21 @@
         }
 
         & > :global(header){
-            display: flex;
-            justify-content: space-between;
-
-            padding: 10px;
             border-bottom: 1px solid var(--faint-colour);
+            justify-content: space-between;
+            display: flex;
+            padding: 10px;
 
             & > :global(:is(h1, h2, h3, h4, h5, h6)){
                 font-size: large;
+            }
+
+            &:has(:global(button)) {
+                text-align: left;
+            }
+
+            & > :global(:not(button)){
+                flex-grow: 1;
             }
         }
 
@@ -95,6 +101,14 @@
             & > :global(*){
                 border-radius: 5px;
             }
+        }
+
+        & :global(.buttons) > :global(button){
+            @include UI_Card(var(--accent-colour), 20%);
+
+            cursor: pointer;
+            padding: 20px;
+            width: 100%;
         }
     }
 
