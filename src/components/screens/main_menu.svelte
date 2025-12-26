@@ -6,6 +6,7 @@
     import ListIcon from "$icons/list.svg?raw" 
 
     import type WordCategory from "$db/categories";
+    import { install, pwaInstalled } from "../../lib/pwa";
     import { titleCase } from "$lib/utils";
     import { bank } from "$db/database";
 
@@ -94,11 +95,13 @@
         <div>Update and modify words</div>
     </button>
 
-    <button>
-        {@html DownloadIcon}
-        <h2>Install Locally</h2>
-        <div>Download and play offline</div>
-    </button>
+    {#if !$pwaInstalled}
+        <button onclick={() => install()}>
+            {@html DownloadIcon}
+            <h2>Install Locally</h2>
+            <div>Download and play offline</div>
+        </button>
+    {/if}
 </main>
 
 <style lang="scss">
@@ -164,6 +167,11 @@
             & > label, & > button[type=submit]{
                 border: 1px solid var(--border-colour);
                 border-radius: 10px;
+            }
+
+            //Prevents category select from changing size whist loading
+            &:nth-of-type(2) > .field{
+                height: 60px;
             }
         }
 

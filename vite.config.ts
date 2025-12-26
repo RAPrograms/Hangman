@@ -5,12 +5,28 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [svelte()],
+
   resolve: {
     alias: {
       "$icons": path_res(__dirname, "./src/assets/icons"),
       "$assets": path_res(__dirname, "./src/assets"),
       "$db": path_res(__dirname, "./src/lib/db"),
       "$lib": path_res(__dirname, "./src/lib"),
+    }
+  },
+
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/main.js',
+
+        assetFileNames: (assetInfo) => {
+          if(assetInfo.names[0].endsWith(".css"))
+            return "assets/main.css"
+          
+          return 'assets/[name]-[hash].[ext]'
+        },
+      }
     }
   }
 })
