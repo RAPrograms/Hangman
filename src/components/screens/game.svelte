@@ -53,7 +53,7 @@
     async function generatePlayLink(){
         const url = window.location
         const gamekey = btoa(await encryptObject({ word, category}))
-        return `${url.protocol}//${url.host}?gamekey=${gamekey}`
+        return `${url.protocol}//${url.host}${url.pathname}?gamekey=${gamekey}`
     }
 </script>
 
