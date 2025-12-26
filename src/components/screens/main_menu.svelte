@@ -6,7 +6,7 @@
     import ListIcon from "$icons/list.svg?raw" 
 
     import type WordCategory from "$db/categories";
-    import { pwaInstalled } from "../../lib/pwa";
+    import { install, pwaInstalled } from "../../lib/pwa";
     import { titleCase } from "$lib/utils";
     import { bank } from "$db/database";
 
@@ -96,7 +96,7 @@
     </button>
 
     {#if !$pwaInstalled}
-        <button>
+        <button onclick={() => install()}>
             {@html DownloadIcon}
             <h2>Install Locally</h2>
             <div>Download and play offline</div>
