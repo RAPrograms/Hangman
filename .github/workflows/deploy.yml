@@ -29,6 +29,8 @@ jobs:
 
       - name: Build
         run: bun run build --base=${{ github.event.repository.name }}
+        env:
+          VITE_CRYPTOGRAPHIC_SECRET: "${{ github.run_id }}"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

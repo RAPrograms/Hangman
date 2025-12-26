@@ -1,9 +1,11 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import LivesDisplay from "../game/lives_display.svelte";
     import WordDisplay from "../game/word_display.svelte";
     import Keyboard from "../keyboard.svelte";
     import Model from "../model.svelte";
+
+    import { encryptObject } from "../../lib/encyption";
+    import { onMount } from "svelte";
 
     let { 
         word,
@@ -47,6 +49,12 @@
 
         return correct
     }
+
+    async function generatePlayLink(){
+        const url = window.location
+        const gamekey = btoa(await encryptObject({ word, category}))
+        return `${url.protocol}//${url.host}?gamekey=${gamekey}`
+    }
 </script>
 
 {#snippet GameEndModel(handler: (e: Event) => void, cancel: () => void)}
@@ -68,7 +76,10 @@
         {/if}
     </div>
     <div class="buttons">
-        <button style="--accent-colour: rgb(251, 100, 182)">Share Game with a Friend</button>
+        <button style="--accent-colour: rgb(251, 100, 182)" onclick={async () => {
+            const link = await generatePlayLink()
+            window.prompt("Share this link with you friends", link);
+        }}>Share Game with a Friend</button>
         <button style="--accent-colour: rgb(81, 162, 255)" onclick={() => {
             cancel()
             gState = {"screen": "main-menu", data: undefined}

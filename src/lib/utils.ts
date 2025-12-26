@@ -36,3 +36,16 @@ export async function fetchFile(uri: string) {
         return [null, error]
     }
 }
+
+export function bufferToBase64(buffer: ArrayBuffer | Uint8Array<ArrayBuffer>): string{
+    const array = new Uint8Array(buffer)
+    const string = String.fromCharCode(...array)
+    return btoa(string);
+}
+
+export function base64ToBuffer(base64: string): Uint8Array<ArrayBuffer>{
+    return Uint8Array.from(
+        atob(base64), 
+        c => c.charCodeAt(0)
+    );
+}
