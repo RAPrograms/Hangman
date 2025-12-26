@@ -1,0 +1,14 @@
+{
+    "name": "Hangman",
+    "short_name": "Hangman",
+    "start_url": "/",
+    "categories": ["games", "kids", "entertainment"],
+    "description": "A simple hangman game.",
+    "theme_color": "#283c5b",
+    "background_color": "#161f2f",
+    "display": "fullscreen",
+    "orientation": "portrait",
+    "icons": [
+
+    ]
+}
