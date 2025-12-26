@@ -108,12 +108,13 @@
     @use "../../styling/variables" as *;
 
     main{
-        max-width: calc(1280px + 2rem);
+        padding: clamp(10px, 1vw, 2rem);
+        max-width: 100vw;
         text-align: left;
-        margin: 0 auto;
-        padding: 2rem;
+        max-width: 95vw;
         width: 500px;
         gap: 20px;
+
 
         & > form:nth-of-type(1){ --accent-colour: rgb(194, 122, 255); }
         & > form:nth-of-type(2){ --accent-colour: rgb(81, 162, 255); }
@@ -123,6 +124,14 @@
 
         & > header{
             text-align: center;
+
+            & > h1{
+                font-size: clamp(20px, 10vw, 3.2rem);
+            }
+
+            & > p{
+                font-size: clamp(12px, 5vw, 1rem);
+            }
         }
 
         &, & > form, & > form > h2{
@@ -177,7 +186,7 @@
 
         & > button{
             grid-template-columns: max-content 1fr; 
-            grid-template-rows: 1fr 1fr; 
+            grid-template-rows: max-content 1fr; 
             grid-auto-columns: 1fr; 
             text-align: left;
             gap: 5px 20px; 
@@ -199,7 +208,6 @@
 
             & > h2{
                 grid-area: Title;
-                font-size: large;
             }
 
             & > div{
