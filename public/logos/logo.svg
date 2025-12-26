@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <style>
+		path {
+			fill: #black;
+		}
+		@media ( prefers-color-scheme: dark ) {
+			path {
+				fill: #white;
+			}
+		}
+	</style>
+    
+    <rect x="200.677" y="176.786" width="108.007" height="23.3978" rx="5" fill="red"/>
+    <rect x="200.677" y="207.983" width="108.007" height="23.3978" rx="5" fill="red"/>
+    <rect x="200.677" y="239.18" width="108.007" height="23.3978" rx="5" fill="red"/>
+    <rect x="200.677" y="269.077" width="108.007" height="23.3978" rx="5" fill="red"/>
+    <path d="M161.974 431.562C155.674 382.166 179.075 304.174 257.38 304.174C335.685 304.174 363.144 402.315 346.486 436.111C308.683 512.804 169.601 491.356 161.974 431.562Z" stroke="red" stroke-width="15"/>
+    <rect x="240.279" y="26" width="28.8018" height="142.987" fill="url(#paint0_linear_1_2)"/>
+    <defs>
+        <linearGradient id="paint0_linear_1_2" x1="254.68" y1="26" x2="254.68" y2="168.987" gradientUnits="userSpaceOnUse">
+            <stop offset="0.22" stop-color="FF0000" stop-opacity="0"/>
+            <stop offset="0.445" stop-color="red"/>
+            <stop offset="1" stop-color="red"/>
+        </linearGradient>
+    </defs>
+
+    
+</svg>
