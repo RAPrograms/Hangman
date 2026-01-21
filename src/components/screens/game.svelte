@@ -1,7 +1,7 @@
 <script lang="ts">
     import LivesDisplay from "../game/lives_display.svelte";
     import WordDisplay from "../game/word_display.svelte";
-    import Keyboard from "../keyboard.svelte";
+    import Keyboard from "../game/keyboard.svelte";
     import Model from "../model.svelte";
 
     import { encryptObject } from "../../lib/encyption";
@@ -111,6 +111,7 @@
 
     div.game{
         justify-content: space-between;
+        align-items: center;
         min-height: 100vh;
         padding: 20px 0;
 

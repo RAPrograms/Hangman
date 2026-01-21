@@ -47,7 +47,7 @@
 </div>
 
 <style lang="scss">
-    @use "../styling/variables" as *;
+    @use "../../styling/variables" as *;
 
     div{
         justify-content: center;
@@ -55,14 +55,22 @@
         flex-wrap: wrap;
         max-width: 90vw;
         display: flex;
+        gap: 3px;
 
         & > button{
             @include UI_Card(var(--colour, rgb(50, 77, 118)), var(--opacity, 60%));
 
-            width: clamp(30px, 5vw + 1rem, 75px);
             text-transform: uppercase;
             aspect-ratio: 1/1;
             display: block;
+            
+            @media (width >= 600px) {
+                width: clamp(30px, 5vw + 1rem, 75px);
+            }
+
+            @media (width < 600px) {
+                width: 10vw;
+            }
 
             &:disabled, &.wrong, &.right{
                 --opacity: 40%;
