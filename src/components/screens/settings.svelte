@@ -75,7 +75,7 @@
         <h1>Settings</h1>
     </header>
 
-    <main>
+    <main class:category-selected={selected_category != ""}>
         <section class="categories">
             <h2>Categories</h2>
             <div>
@@ -101,19 +101,23 @@
             </div>
         </section>
 
-        {#if selected_category == ""}
-            <div class="message">Select a category to view and manage words</div>
-        {:else}
-            <CategoryWordsManager bind:details={categories[selected_category]} onDelete={() => {
-                delete categories[selected_category]
-                selected_category = ""
-            }}/>
-        {/if}
+        <section class="words">
+            {#if selected_category == ""}
+                <div class="message">Select a category to view and manage words</div>
+            {:else}
+                <CategoryWordsManager onExit={() => selected_category = ""} bind:details={categories[selected_category]} onDelete={() => {
+                    delete categories[selected_category]
+                    selected_category = ""
+                }}/>
+            {/if}
+        </section>
     </main>
 </div>
 
 <style lang="scss">
     @use "../../styling/variables" as *;
+
+    $layout-breakpoint: 600px;
 
     .primary-bnt{
         align-items: center;
@@ -171,9 +175,17 @@
                 border-right: 1px solid var(--border-colour);
                 background-color: var(--background-colour);
                 backdrop-filter: blur(20px);
+                flex-shrink: 0;
                 padding: 20px;
-                width: 300px;
                 gap: 0;
+                
+                @media (width >= $layout-breakpoint) {
+                    width: 300px;
+                }
+
+                @media (width < $layout-breakpoint) {
+                    width: 100%;
+                }
 
                 & > h2{
                     border-bottom: 2px solid color-mix(in hsl shorter hue, var(--faint-colour) 20%, transparent);
@@ -227,6 +239,23 @@
                             display: none;
                         }
                     }
+                }
+            }
+
+            & > .words{
+                flex-grow: 1;
+
+                &:has(div.message:only-child){
+                    display: grid;
+                    place-items: center;
+                }
+            }
+
+            @media (width < $layout-breakpoint) {
+                &:not(.category-selected) > .words,
+                &.category-selected > .categories{
+                    display: none;
+                    visibility: hidden;
                 }
             }
         }

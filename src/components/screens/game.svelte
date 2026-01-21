@@ -1,7 +1,7 @@
 <script lang="ts">
     import LivesDisplay from "../game/lives_display.svelte";
     import WordDisplay from "../game/word_display.svelte";
-    import Keyboard from "../keyboard.svelte";
+    import Keyboard from "../game/keyboard.svelte";
     import Model from "../model.svelte";
 
     import { encryptObject } from "../../lib/encyption";
@@ -27,7 +27,7 @@
 
     onMount(() => {
         chars_to_guess = word.split("").reduce((map, char) => {
-            if(!map.has(char))
+            if(!map.has(char) && char != " ")
                 map.set(char, undefined)
 
             return map
@@ -35,7 +35,7 @@
     })
 
     function validateLetter(letter: string): boolean{
-        const correct = word.toLowerCase().includes(letter.toLowerCase())
+        const correct = word.toLowerCase().replace(" ", "").includes(letter.toLowerCase())
         if(correct)
             chars_to_guess -= 1
 
@@ -44,6 +44,7 @@
 
         if(lives <= 0 || chars_to_guess <= 0)
             model.prompt("game-end")
+        
 
         display.showCharacter(letter)
 
@@ -82,6 +83,7 @@
         }}>Share Game with a Friend</button>
         <button style="--accent-colour: rgb(81, 162, 255)" onclick={() => {
             cancel()
+            window.history.replaceState(undefined, "Hangman", "/") // Ensures play links are cleared
             gState = {"screen": "main-menu", data: undefined}
         }}>Close</button>
     </div>
@@ -111,6 +113,7 @@
 
     div.game{
         justify-content: space-between;
+        align-items: center;
         min-height: 100vh;
         padding: 20px 0;
 
