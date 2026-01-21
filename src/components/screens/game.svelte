@@ -27,7 +27,7 @@
 
     onMount(() => {
         chars_to_guess = word.split("").reduce((map, char) => {
-            if(!map.has(char))
+            if(!map.has(char) && char != " ")
                 map.set(char, undefined)
 
             return map
@@ -35,7 +35,7 @@
     })
 
     function validateLetter(letter: string): boolean{
-        const correct = word.toLowerCase().includes(letter.toLowerCase())
+        const correct = word.toLowerCase().replace(" ", "").includes(letter.toLowerCase())
         if(correct)
             chars_to_guess -= 1
 
