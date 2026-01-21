@@ -28,8 +28,7 @@
             return
         }
 
-        scale = (1 - ((originalSize - screen.width) / originalSize))
-        
+        scale = 1 - ((originalSize - screen.width) / originalSize)
     }
 </script>
 

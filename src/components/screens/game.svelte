@@ -44,6 +44,7 @@
 
         if(lives <= 0 || chars_to_guess <= 0)
             model.prompt("game-end")
+        
 
         display.showCharacter(letter)
 
@@ -82,6 +83,7 @@
         }}>Share Game with a Friend</button>
         <button style="--accent-colour: rgb(81, 162, 255)" onclick={() => {
             cancel()
+            window.history.replaceState(undefined, "Hangman", "/") // Ensures play links are cleared
             gState = {"screen": "main-menu", data: undefined}
         }}>Close</button>
     </div>
