@@ -57,7 +57,7 @@ The app will typically be available at http://localhost:5173.
     Win by revealing the whole word before the hangman is complete!
 
 ## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the GPL-2.0 License - see the LICENSE file for details.
 
 ## 👤 Author
 [RAPrograms](https://github.com/RAPrograms)
